@@ -19,7 +19,7 @@ sudo chmod 644 /etc/systemd/system/aicar.service
 sudo systemctl enable /etc/systemd/system/aicar.service
 sudo mkdir /etc/selfdriving-rc/
 echo 1 | sudo tee /etc/selfdriving-rc/car_id.txt
-sudo chown -R pi:pi /etc/self-driving-rc/
+sudo chown -R pi:pi /etc/selfdriving-rc/
 sudo chown -R pi:pi '${working_dir}'
 
 echo "Please restart for changes to take effect"
