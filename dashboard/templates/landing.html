@@ -1,0 +1,94 @@
+<html>
+    <head>
+        <title>ME 2300 Homepage</title>
+        <link rel="stylesheet" href="../static/style.css">
+    </head>
+    <body>
+        <h1>Welcome to ME 2300</h1>
+        <div class="flex-container">
+            <div>
+                <h2> Modular AI/Sensors Package MQP </h2>
+                <p> To learn more about our MQP, view our <a href="/">documentation</a></p>
+                <h4> Autonomous Driving </h4>
+                <video width="450" controls>
+                    <source src="../static/media/driving.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div style="width:57%">
+                <h2> Manage your Car </h2>
+                <p> To access your vehicle's dashboard:</p>
+                <ol>
+                    <li> Power on the Raspberry Pi and Servo in your vehicle's AI/Sensors package </li>
+                    <li> After about 1 minute and 30 seconds, refresh this page.
+                        You should now see your vehicle's name in the drop-down menu below </li>
+                    <li> Select your vehicle's name to be taken to your dashboard </li>
+                    <li> You will see your car's id, video feed, and the following options:
+                        <ul>
+                            <li> <span style="color:red"> 'Start' </span> - signals vehicle to start autonomously driving </li>
+                            <li> <span style="color:red"> 'Stop' </span> - signals vehicle to stop driving </li>
+                            <li> <span style="color:red"> 'Lane Color Selection' </span> - set the color of the lanes.
+                                Make to check for areas of different lighting </li>
+                            <li> <span style="color:red"> 'Disable/Enable Streaming' </span> - toggle video stream.
+                                Disabling streaming can improve performance </li>
+                            <li> <span style="color:red"> 'Driving Direction' </span> - toggle driving direction to
+                                accommodate motor placement </li>
+                            <li> <span style="color:red"> 'Top Speed' </span> - change your vehicle's top speed from
+                                0-100 percent of full throttle <br>
+                                <span style="color:orange"> *** driving at high speeds can result in mechanical damage *** </span>
+                            </li>
+                            <li> <span style="color:red"> 'Steering Aggressiveness' </span> - change steering
+                                aggressiveness from 50-200 percent of normal steering <br>
+                                <span style="color:orange">*** over-steering can result in mechanical damage *** </span>
+                            </li>
+                        </ul>
+                    </li>
+                </ol>
+                <select style="cursor:pointer" onchange="document.location.href += this.value">
+                    <option selected>Choose a car</option>
+                    {% for carid in cars %}
+                    <option value="dashboard/{{carid}}">{{cars[carid]}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <br>
+        <div id="showMoreDiv" style="display:none">
+            <br>
+            <h2> &nbsp; Brief Technical Overview </h2>
+            <div id="technicalInfo" class="flex-container2">
+                <div>
+                    <h3> Modular Package </h3>
+                    <img src="../static/media/sensors.jpeg" alt="Modular Sensors Package" width="300">
+                </div>
+                <div>
+                    <h3> System Architecture </h3>
+                    <img src="../static/media/web_architecture.jpeg" alt="System Architecture" width="500">
+                    <p> Small Description here </p>
+                </div>
+            </div>
+            <br> <br>
+        </div>
+        <br>
+        <button id=showMoreButton onclick="showMore()"> Show More </button>
+        <br>
+        <br>
+        <script>
+            function showMore() {
+                let button = document.getElementById('showMoreButton');
+                let outerDiv = document.getElementById('showMoreDiv');
+                let info = document.getElementById('technicalInfo');
+                if (outerDiv.style.display === "block") {
+                    outerDiv.style.display = "none";
+                    button.innerHTML = "Show More";
+                } else {
+                    outerDiv.style.display = "block";
+                    info.style.display = "flex";
+                    console.log(info.currentStyle);
+                    button.innerHTML = "Show Less";
+                    window.scrollTo(0,outerDiv.scrollHeight);
+                }
+            };
+        </script>
+    </body>
+</html>
+

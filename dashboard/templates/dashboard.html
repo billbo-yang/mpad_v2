@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta id="carid" data-name="{{carid}}" />
+  <meta id="friendlyname" data-name="{{friendly_name}}" />
+  <title>RC Car Dashboard</title>
+  <link rel="stylesheet" href="../static/style.css" />
+  <link
+          href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css"
+          rel="stylesheet"
+  />
+  <link
+          href="https://unpkg.com/intro.js/minified/introjs.min.css"
+          rel="stylesheet"
+  />
+  <link
+          href="https://unpkg.com/intro.js/themes/introjs-modern.css"
+          rel="stylesheet"
+  />
+  <link
+          rel="stylesheet"
+          href="https://unpkg.com/tippy.js@5/dist/backdrop.css"
+  />
+  <script src="../static/scripts.js"></script>
+  <script src="../static/configs.js"></script>
+  <!-- Socket IO
+  ================================================== -->
+  <script
+          type="text/javascript"
+          src="//cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.0/socket.io.js"
+  ></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>  <!-- IntroJS
+  ================================================== -->
+  <script src="https://unpkg.com/intro.js/minified/intro.min.js"></script>
+  <!-- TippyJS
+  ================================================== -->
+  <script src="https://unpkg.com/popper.js@1"></script>
+  <script src="https://unpkg.com/tippy.js@5"></script>
+</head>
+<style>
+  h1 {
+    display: inline;
+  }
+  h3 {
+    display: inline;
+  }
+</style>
+<body>
+<div>
+  <a href="/">&lt; Go back</a>
+  <input
+          id="terminateButton"
+          type="button"
+          style="background-color: red"
+          class="rightMenuButton"
+          value="Terminate"
+          onclick="terminate()"
+  />
+  <input
+          id="tutorialButton"
+          type="button"
+          style="background-color: green"
+          class="rightMenuButton"
+          value="Tutorial"
+          onclick="createTutorial()"
+  />
+  <br />
+  <h1>Dashboard for:</h1>
+  <h1 id="friendly_name">{{friendly_name}}</h1>
+  <br />
+  <h3>Car ID:</h3>
+  <div class="divider"></div>
+  <div class="battery-text">
+    <h3>LiPo Battery Level:&nbsp;&nbsp;&nbsp;</h3>
+    <div class="battery-outer" id="batterylevel-outer">
+      <p id="batterylevel-text"></p>
+      <div id="batterylevel" class="battery-level">
+      </div>
+    </div>
+  </div>
+  <div class="flex-container" style="margin-top: 10px">
+    <div class="flex-container3">
+      <div>
+        <h3 id="car_id" style="margin-right: 1em">{{carid}}</h3>
+        <button
+                id="disableVideo"
+                class="smallControlButton"
+                onclick="disableVideo()"
+                style="text-align:center; float:right"
+        >
+          Disable Video
+        </button>
+        <button
+                id="enableVideo"
+                hidden
+                class="smallControlButton"
+                onclick="enableVideo()"
+                style="text-align:center; float:right;"
+        >
+          Enable Video
+        </button>
+      </div>
+      <div class="cameraContainer">
+        <img id="streamer-image" src="" />
+      </div>
+    </div>
+    <div id="controlContainer">
+      <h2 style="text-align: center; color: black; font-weight: bold">
+        Vehicle Controls
+      </h2>
+      <h3>Start/Stop Autonomous Driving</h3>
+      <div class="flex-container2" style="margin-top: 10px">
+        <button
+                id="startCar"
+                style="text-align: center"
+                class="controlButton"
+                onclick="startCar()"
+        >
+          Start
+        </button>
+        <button
+                id="stopCar"
+                hidden
+                style="text-align: center"
+                class="controlButton"
+                onclick="stopCar()"
+        >
+          Stop
+        </button>
+      </div>
+      <br />
+      <h3>Top Speed</h3>
+      <div class="slide-container" style="margin-top: 10px">
+        <input
+                type="range"
+                min="0"
+                max="100"
+                class="slider"
+                id="speedRange"
+        />
+        <p class="output">Speed: <span id="speed"></span>%</p>
+      </div>
+      <h3>Steering Aggressiveness</h3>
+      <div class="slide-container" style="margin-top: 10px">
+        <input
+                type="range"
+                min="10"
+                max="30"
+                class="slider"
+                id="steeringRange"
+        />
+        <p class="output">Max Angle: <span id="steering"></span>%</p>
+      </div>
+      <button
+              id="advanced-settings-btn"
+              class="advancedbtn"
+              type="button"
+              onclick="hideShowAdvancedSettings()"
+      >
+        <h3>Advanced Settings</h3>
+        <span class="arrow" id="arrow"></span>
+      </button>
+      <div class="settings-container" id="advanced-settings">
+        <h3>Servo Shield Adjustment</h3>
+        <div class="slide-container" style="margin-top: 10px">
+          <input
+                  type="range"
+                  min="-40"
+                  max="40"
+                  class="slider"
+                  id="servoRange"
+          />
+          <p class="output">Servo Angle Adjusted: <span id="servo_adjustment"></span>&deg;</p>
+        </div>
+        <h3>Servo Motor Channel Selection</h3>
+        <div class="dropdown">
+          <button
+                  id="servo-dropbtn"
+                  class="dropbtn"
+                  type="button"
+                  class="btn btn-default dropdown-toggle"
+                  data-toggle="dropdown"
+                  aria-
+                  haspopup="true"
+                  aria-expanded="false"
+          >
+            Channel 0
+          </button>
+          <div class="dropdown-content" id="servo-content">
+            <a href="#" onclick="changeServoButtonText(this.innerText)"
+            >Channel 0</a
+            >
+            <a href="#" onclick="changeServoButtonText(this.innerText)"
+            >Channel 1</a
+            >
+            <a href="#" onclick="changeServoButtonText(this.innerText)"
+            >Channel 2</a
+            >
+            <a href="#" onclick="changeServoButtonText(this.innerText)"
+            >Channel 3</a
+            >
+            <a href="#" onclick="changeServoButtonText(this.innerText)"
+            >Channel 4</a
+            >
+            <a href="#" onclick="changeServoButtonText(this.innerText)"
+            >Channel 5</a
+            >
+            <a href="#" onclick="changeServoButtonText(this.innerText)"
+            >Channel 6</a
+            >
+            <a href="#" onclick="changeServoButtonText(this.innerText)"
+            >Channel 7</a
+            >
+            <a href="#" onclick="changeServoButtonText(this.innerText)"
+            >Channel 8</a
+            >
+            <a href="#" onclick="changeServoButtonText(this.innerText)"
+            >Channel 9</a
+            >
+            <a href="#" onclick="changeServoButtonText(this.innerText)"
+            >Channel 10</a
+            >
+            <a href="#" onclick="changeServoButtonText(this.innerText)"
+            >Channel 11</a
+            >
+            <a href="#" onclick="changeServoButtonText(this.innerText)"
+            >Channel 12</a
+            >
+            <a href="#" onclick="changeServoButtonText(this.innerText)"
+            >Channel 13</a
+            >
+            <a href="#" onclick="changeServoButtonText(this.innerText)"
+            >Channel 14</a
+            >
+            <a href="#" onclick="changeServoButtonText(this.innerText)"
+            >Channel 15</a
+            >
+          </div>
+        </div>
+        <h3>ESC Motor Channel Selection</h3>
+        <div class="dropdown">
+          <button
+                  id="esc-dropbtn"
+                  class="dropbtn"
+                  type="button"
+                  class="btn btn-default dropdown-toggle"
+                  data-toggle="dropdown"
+                  aria-
+                  haspopup="true"
+                  aria-expanded="false"
+          >
+            Channel 1
+          </button>
+          <div class="dropdown-content" id="esc-content">
+            <a href="#" onclick="changeESCButtonText(this.innerText)"
+            >Channel 0</a
+            >
+            <a href="#" onclick="changeESCButtonText(this.innerText)"
+            >Channel 1</a
+            >
+            <a href="#" onclick="changeESCButtonText(this.innerText)"
+            >Channel 2</a
+            >
+            <a href="#" onclick="changeESCButtonText(this.innerText)"
+            >Channel 3</a
+            >
+            <a href="#" onclick="changeESCButtonText(this.innerText)"
+            >Channel 4</a
+            >
+            <a href="#" onclick="changeESCButtonText(this.innerText)"
+            >Channel 5</a
+            >
+            <a href="#" onclick="changeESCButtonText(this.innerText)"
+            >Channel 6</a
+            >
+            <a href="#" onclick="changeESCButtonText(this.innerText)"
+            >Channel 7</a
+            >
+            <a href="#" onclick="changeESCButtonText(this.innerText)"
+            >Channel 8</a
+            >
+            <a href="#" onclick="changeESCButtonText(this.innerText)"
+            >Channel 9</a
+            >
+            <a href="#" onclick="changeESCButtonText(this.innerText)"
+            >Channel 10</a
+            >
+            <a href="#" onclick="changeESCButtonText(this.innerText)"
+            >Channel 11</a
+            >
+            <a href="#" onclick="changeESCButtonText(this.innerText)"
+            >Channel 12</a
+            >
+            <a href="#" onclick="changeESCButtonText(this.innerText)"
+            >Channel 13</a
+            >
+            <a href="#" onclick="changeESCButtonText(this.innerText)"
+            >Channel 14</a
+            >
+            <a href="#" onclick="changeESCButtonText(this.innerText)"
+            >Channel 15</a>
+          </div>
+        </div>
+      </div>
+      <div class="flex-container2">
+        <div>
+          <span>Invert Throttle:&nbsp</span>
+          <label class="switch" style="vertical-align: middle" id="directionSwitchLabel">
+            <input id="directionSwitch" type="checkbox" checked />
+            <span class="toggle round"></span>
+          </label>
+        </div>
+        <div>
+          <span>Invert Steering:&nbsp</span>
+          <label class="switch" style="vertical-align:middle" id="servoSwitchLabel">
+            <input id="servoSwitch" type="checkbox" checked />
+            <span class="toggle round"></span>
+          </label>
+        </div>
+        <div>
+          <span>Autonomous:&nbsp</span>
+          <label class="switch" style="vertical-align:middle" id="autonomousDrivingSwitchLabel">
+            <input id="autonomousDrivingSwitch" type="checkbox" checked onclick="switchDrivingMode()">
+            <span class="toggle round"></span>
+          </label>
+        </div>
+        <button
+                id="selectColorButton"
+                class="smallControlButton"
+                onclick="document.location.href += this.value"
+                style="text-align: center"
+                value="/colorselector"
+        >
+          Select Lane Color
+        </button>
+      </div>
+    </div>
+  </div>
+  <!--            <div class="flex-container2" style="margin-top: 10px; margin-bottom: 15px">-->
+  <!--                <select style="cursor:pointer">-->
+  <!--                    <option selected disabled>Driving Mode</option>-->
+  <!--                    <option value="Race Mode">Race Mode</option>-->
+  <!--                    <option value="Sensor Mode">Sensor Mode</option>-->
+  <!--                </select>-->
+  <!--                <select style="cursor:pointer">-->
+  <!--                    <option selected disabled>Driving Algorithm</option>-->
+  <!--                    <option value="Lane Following">Lane Following</option>-->
+  <!--                    <option value="Raytracing">Raytracing</option>-->
+  <!--                </select>-->
+  <!--            </div>-->
+  <br />
+</div>
+<br />
+<br />
+<input
+        type="button"
+        class="rightMenuButton"
+        value="Export Data"
+        onclick="exportSensorData()"
+/>
+<br />
+<br />
+
+<script src="../static/scripts.js"></script>
+
+<button
+        onclick="hideShowCharts()"
+        id="hideShowButton"
+        class="controlButton"
+>
+  Hide Charts
+</button>
+
+<!--suppress JSUnresolvedLibraryURL -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<!--suppress JSUnresolvedLibraryURL -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+<div class="flex-container" id="charts">
+  <div class="sensorDataSmall data-container">
+    <div id="battery">
+      <canvas id="batChart" height="400px"></canvas>
+    </div>
+    <div id="halleffect">
+      <canvas id="hefChart" height="400px"></canvas>
+    </div>
+  </div>
+  <div class="sensorDataLarge data-container">
+    <div id="ultrasonic">
+      <canvas id="uscChart" height="325px"></canvas>
+    </div>
+    <div id="imu">
+      <canvas id="imuChart" height="600px"></canvas>
+    </div>
+  </div>
+  <div class="sensorDataSmall data-container">
+    <div id="temperature">
+      <canvas id="tmpChart" height="400px"></canvas>
+    </div>
+    <div id="humidity">
+      <canvas id="hmdChart" height="400px"></canvas>
+    </div>
+  </div>
+</div>
+<br />
+<br />
+<button
+        onclick="hideShowTests()"
+        id="hideShowTestsButton"
+        class="controlButton"
+>
+  Hide Testing Table
+</button>
+<br />
+<br />
+<div class="flex-container" id="tests">
+  <table id="testtable">
+    <tr>
+      <th>Test</th>
+      <th>Description</th>
+      <th>Button</th>
+    </tr>
+    <tr>
+      <td>Servo Angle</td>
+      <td>Tests the front servodriver by setting servo angle to 90 then to 60 then to 120 then back to 90 degrees </td>
+      <td> <button
+              onclick="testServoAngle()"
+              id="testServoAngleButton">
+        TEST
+      </button></td>
+    </tr>
+    <tr>
+      <td>Servo Throttle</td>
+      <td>Tests the servodriver by setting the throttle to 15% for 2 seconds</td>
+      <td><button
+              onclick="testThrottle()"
+              id="testThrottleButton">
+        TEST
+      </button></td>
+    </tr>
+  </table>
+</div>
+
+<script>
+  tippy(document.getElementById("battery"), {
+    content:
+            "<center><strong>CPU Temp Chart</strong></center>Displays the Fahrenheit temperature value of the Raspberry Pi CPU bus over time in seconds.",
+    trigger: "click",
+    interactive: true,
+  });
+  tippy(document.getElementById("halleffect"), {
+    content:
+            "<center><strong>Hall Effect Chart</strong></center>Displays the RPM of the motor over time in seconds.",
+    trigger: "click",
+    interactive: true,
+  });
+  tippy(document.getElementById("ultrasonic"), {
+    content:
+            "<center><strong>Ultrasonic Chart</strong></center>Displays the distance of a detected object in millimeters on the axis of the corresponding ultrasonic sensor.",
+    trigger: "click",
+    interactive: true,
+  });
+  tippy(document.getElementById("imu"), {
+    content:
+            "<center><strong>IMU Chart</strong></center>Displays the value of rotation in degrees on the X, Y, and Z axes relative to the car's original position over time in seconds.",
+    trigger: "click",
+    interactive: true,
+  });
+  tippy(document.getElementById("temperature"), {
+    content:
+            "<center><strong>Temperature Chart</strong></center>Displays the Fahrenheit temperature value detected by the temperature sensor of the package over time in seconds.",
+    trigger: "click",
+    interactive: true,
+  });
+  tippy(document.getElementById("humidity"), {
+    content:
+            "<center><strong>Humidity Chart</strong></center>Displays the percentage humidity detected by the humidity sensor of the package over time in seconds.",
+    trigger: "click",
+    interactive: true,
+  });
+
+  const carid = document.getElementById("car_id").innerText;
+  let speedSlider = document.getElementById("speedRange");
+  let speed = document.getElementById("speed");
+  speed.innerHTML = speedSlider.value * 1;
+
+  speedSlider.oninput = function () {
+    let speedValue = this.value * 1;
+    speed.innerHTML = speedValue;
+
+    const speed_string = "/api/car/" + carid + "/set/speed/" + speedValue;
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("POST", speed_string, true);
+    xhttp.send();
+  };
+
+  let steeringSlider = document.getElementById("steeringRange");
+  let steering = document.getElementById("steering");
+  steering.innerHTML = steeringSlider.value * 5;
+
+  steeringSlider.oninput = function () {
+    let steeringValue = this.value * 5;
+    steering.innerHTML = steeringValue;
+
+    const steering_string =
+            "/api/car/" + carid + "/set/steering/" + steeringValue;
+    var xhttp2 = new XMLHttpRequest();
+    xhttp2.open("POST", steering_string, true);
+    xhttp2.send();
+  };
+
+  let servoSlider = document.getElementById("servoRange");
+  let servoAdjustment = document.getElementById("servo_adjustment");
+  servoAdjustment.innerHTML = servoSlider.value * 1;
+
+  servoSlider.oninput = function () {
+    let servoValue = this.value * 1;
+    servoAdjustment.innerHTML = servoValue;
+
+    const servo_string =
+            "/api/car/" + carid + "/set/servo_adjustment/" + servoValue;
+    var xhttp2 = new XMLHttpRequest();
+    xhttp2.open("POST", servo_string, true);
+    xhttp2.send();
+  };
+
+  let directionSwitch = document.getElementById("directionSwitch");
+  directionSwitch.oninput = function () {
+    const direction_string = "/api/car/" + carid + "/toggle/direction";
+    var xhttp3 = new XMLHttpRequest();
+    xhttp3.open("GET", direction_string, true);
+    xhttp3.send();
+  };
+
+  let servoSwitch = document.getElementById("servoSwitch");
+  servoSwitch.oninput = function () {
+    const servo_string = "/api/car/" + carid + "/toggle/servo_direction";
+    var xhttp3 = new XMLHttpRequest();
+    xhttp3.open("GET", servo_string, true);
+    xhttp3.send();
+  };
+</script>
+</body>
+</html>

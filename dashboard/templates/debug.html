@@ -1,0 +1,22 @@
+<html>
+    <head>
+        <title>DEBUG PAGE</title>
+    </head>
+    <body>
+        <h1>Developer Debug Panel</h1>
+        <p>All cars:</p>
+        <list>
+            {% for car in cars %}
+            <li>{{car}} : <a href="/dashboard/{{car}}">Dashboard</a> | <a href="/api/client/{{car}}/data">Data</a></li>
+            {% endfor %}
+        </list>
+        <form action="/debug/populate">
+            <label for="cars">Number of fake cars to create</label>
+            <input type="number" value="1" id="cars" name="cars">
+            <button type="submit">Create</button>
+        </form>
+    </body>
+    <script>
+        console.log('{{cars}}');
+    </script>
+</html>

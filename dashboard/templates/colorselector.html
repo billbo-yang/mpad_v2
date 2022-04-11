@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta id="carid" data-name="{{carid}}">
+    <meta id="friendlyname" data-name="{{friendly_name}}">
+    <title> Lane Color Selector </title>
+    <link rel="stylesheet" href="../../static/style.css">
+    <script src="../../static/colorselector.js"></script>
+        <!-- Socket IO
+    ================================================== -->
+    <script type="text/javascript"
+          src="//cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.0/socket.io.js">
+    </script>
+</head>
+<style>
+    h1 {display:inline;}
+    h3 {display:inline;}
+</style>
+    <div>
+        <a href="/dashboard/{{carid}}">&lt; Go back</a>
+        <input type="button" class="rightMenuButton" value="Reset Colors" onclick="resetColors()">
+    </div>
+    <br>
+    <h1>Lane Color Selector for:</h1>
+    <h1 id="friendly_name">{{friendly_name}}</h1>
+    <br>
+    <h3>Car ID:</h3>
+    <h3 id="car_id">{{carid}}</h3>
+    <div class="flex-container">
+        <div id="lanePickingContainer">
+            <img id="clickImage" src="">
+        </div>
+        <div>
+            <img id="streamer-image" src="">
+        </div>
+
+    </div>
+    <br>
+    <br>
+</body>
+</html>
