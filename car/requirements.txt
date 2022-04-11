@@ -1,0 +1,7 @@
+requests
+websocket-client
+opencv-python
+imutils
+python-socketio
+numpy
+adafruit-circuitpython-servokit
