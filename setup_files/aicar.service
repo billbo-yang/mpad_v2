@@ -1,0 +1,11 @@
+[Unit]
+Description=Selfdriving RC car connection service
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+ExecStart=/bin/bash {root_dir}/car/startup.sh
+Type=simple
+WorkingDirectory=/home/pi
+Restart=on-failure

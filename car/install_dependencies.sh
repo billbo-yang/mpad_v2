@@ -1,3 +1,4 @@
+#!/bin/bash
 
 sudo apt-get install -y build-essential python3 python3-dev \
 python3-pip python3-virtualenv python3-numpy python3-picamera \
@@ -13,6 +14,7 @@ sudo apt-get install -y libatlas-base-dev
 sudo apt-get install -y libjasper-dev 
 sudo apt-get install -y libqtgui4 
 sudo apt-get install -y libqt4-test
+sudo apt-get install -y fswebcam
 
 pip3 install -r requirements.txt
 
