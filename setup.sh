@@ -7,8 +7,11 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 # install car dependencies
-sudo ./car/install_dependencies.sh
-sudo ./dashboard/install_dependencies.sh
+cd car/
+sudo ./install_dependencies.sh
+cd ../dashboard
+sudo ./install_dependencies.sh
+cd ..
 
 # enable startup scripts
 working_dir=`pwd`
