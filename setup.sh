@@ -15,7 +15,7 @@ cd ..
 
 # enable startup scripts
 working_dir=`pwd`
-sed -i -e 's/{root_dir}/${working_dir}/g' setup_files/aicar.service
+sed -i -e "s/{root_dir}/${working_dir}/g" setup_files/aicar.service
 
 sudo cp setup_files/aicar.service /etc/systemd/system/
 sudo chmod 644 /etc/systemd/system/aicar.service
