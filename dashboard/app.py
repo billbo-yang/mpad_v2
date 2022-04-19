@@ -445,4 +445,4 @@ def test_throttle(car_id):
     return '200 OK', 200
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000,  debug=True)
+    socketio.run(app, host='0.0.0.0', port=5000,  debug=True, pingTimeout=30000)
