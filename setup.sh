@@ -15,14 +15,17 @@ cd ..
 
 # enable startup scripts
 working_dir=`pwd`
-sed -i -e "s/{root_dir}/${working_dir}/g" setup_files/aicar.service
+echo "Working directory: ${working_dir}"
+sed -i "s,{root_dir},${working_dir},g" setup_files/aicar.service
+sed -i "s,/home/pi/Documents,${working_dir},g" car/startup.sh
 
 sudo cp setup_files/aicar.service /etc/systemd/system/
 sudo chmod 644 /etc/systemd/system/aicar.service
 sudo systemctl enable /etc/systemd/system/aicar.service
 sudo mkdir /etc/selfdriving-rc/
-echo 1 | sudo tee /etc/selfdriving-rc/car_id.txt
+echo 1 | sudo tee /etc/selfdriving-rc/carnumber
 sudo chown -R pi:pi /etc/selfdriving-rc/
-sudo chown -R pi:pi '${working_dir}'
+sudo chown -R pi:pi "${working_dir}"
 
 echo "Please restart for changes to take effect"
+echo "Remember to change check and change file directories in car/startup.sh for the system to correctly boot on startup!"
