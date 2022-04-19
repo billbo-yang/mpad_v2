@@ -7,7 +7,7 @@ from redisConn import RedisConn
 import time
 
 app = Flask(__name__)
-socketio = SocketIO(app)
+socketio = SocketIO(app, ping_timeout=30)
 redis = RedisConn()
 
 # Initialize the cars in the set
@@ -445,4 +445,4 @@ def test_throttle(car_id):
     return '200 OK', 200
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000,  debug=True, pingTimeout=30000)
+    socketio.run(app, host='0.0.0.0', port=5000,  debug=True)
