@@ -7,7 +7,7 @@ from redisConn import RedisConn
 import time
 
 app = Flask(__name__)
-socketio = SocketIO(app, ping_timeout=30)
+socketio = SocketIO(app, ping_timeout=60)
 redis = RedisConn()
 
 # Initialize the cars in the set
